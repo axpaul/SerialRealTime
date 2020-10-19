@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/iconeSerial">
+        <file>icone/disconnect.png</file>
+        <file>icone/settings.png</file>
+        <file>icone/usb.png</file>
+    </qresource>
+    <qresource prefix="/iconeWindows">
+        <file>icone/Qt_logo_2016.svg.png</file>
+        <file>icone/question.png</file>
+        <file>icone/remove.png</file>
+        <file>icone/usb.png</file>
+    </qresource>
+</RCC>
