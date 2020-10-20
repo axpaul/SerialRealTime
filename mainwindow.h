@@ -7,6 +7,8 @@
 #include <QDebug>
 #include "mythread.h"
 #include <QWidget>
+#include "serialport.h"
+
 
 QT_BEGIN_NAMESPACE
 
@@ -23,20 +25,6 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-      struct Settings {
-        QString name;
-        qint32 baudRate;
-        QString stringBaudRate;
-        QSerialPort::DataBits dataBits;
-        QString stringDataBits;
-        QSerialPort::Parity parity;
-        QString stringParity;
-        QSerialPort::StopBits stopBits;
-        QString stringStopBits;
-        QSerialPort::FlowControl flowControl;
-        QString stringFlowControl;
-    };
-
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
@@ -70,7 +58,7 @@ private:
     MyThread *m_worker = nullptr;
 
     SettingsDialog *m_settings = nullptr;
-    Settings *m_settingsInfo = nullptr;
+    SerialPort::Settings *m_settingsInfo = nullptr;
 
 
 

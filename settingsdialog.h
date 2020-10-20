@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QSerialPort>
 #include "mainwindow.h"
+#include "serialport.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -24,7 +25,7 @@ public:
     explicit SettingsDialog(QWidget *parent = nullptr);
     ~SettingsDialog();
 
-    MainWindow::Settings settings() const;
+    SerialPort::Settings settings() const;
 
 signals:
     void applyParameter();
@@ -42,7 +43,7 @@ private:
 
 private:
     Ui::SettingsDialog *m_ui = nullptr;
-    MainWindow::Settings m_currentSettings;
+    SerialPort::Settings m_currentSettings;
     QIntValidator *m_intValidator = nullptr;
 };
 
