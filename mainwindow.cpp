@@ -6,7 +6,7 @@
 #include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow), m_status(new QLabel), m_settingsInfo(new Settings)
+    : QMainWindow(parent), ui(new Ui::MainWindow), m_status(new QLabel), m_settingsInfo(new SerialPort::Settings)
 {
     ui->setupUi(this);
 

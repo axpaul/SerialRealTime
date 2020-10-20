@@ -5,7 +5,7 @@
 #include <QDebug>
 
 Q_DECLARE_METATYPE(QSerialPort::SerialPortError)
-Q_DECLARE_METATYPE(MainWindow::Settings)
+Q_DECLARE_METATYPE(SerialPort::Settings)
 
 SerialPort::SerialPort(QObject *parent)
     : QThread(parent)
@@ -13,7 +13,7 @@ SerialPort::SerialPort(QObject *parent)
     m_waitTimerReponse = new QTimer;
     m_semSerialPort = new QSemaphore(1);
     m_semVide = new QSemaphore(0);
-    m_settingsPort = new MainWindow::Settings;
+    m_settingsPort = new SerialPort::Settings;
 }
 
 SerialPort::~SerialPort()
@@ -100,7 +100,7 @@ void SerialPort::writeData(const QByteArray &data)
     m_semSerialPort->release(1);
 }
 
-MainWindow::Settings SerialPort::settingsInfo() const
+SerialPort::Settings SerialPort::settingsInfo() const
 {
     return *m_settingsPort;
 }
@@ -129,7 +129,7 @@ void SerialPort::readingData() {
       }
 }
 
-void SerialPort::settingUpdate(MainWindow::Settings settingsActu)
+void SerialPort::settingUpdate(SerialPort::Settings settingsActu)
 {
    *m_settingsPort = settingsActu;
 }
@@ -142,7 +142,7 @@ void SerialPort::run()
 
 
     qRegisterMetaType<QSerialPort::SerialPortError>();
-    qRegisterMetaType<MainWindow::Settings>();
+    qRegisterMetaType<SerialPort::Settings>();
 
     initActionsConnections();
 

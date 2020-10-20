@@ -9,7 +9,6 @@
 #include <QSemaphore>
 #include <QStack>
 #include <QThread>
-#include "mainwindow.h"
 #include <QMutex>
 
 #define NB_BYTES 5
@@ -18,6 +17,20 @@ class SerialPort : public QThread
 {
     Q_OBJECT
 public:
+    struct Settings {
+      QString name;
+      qint32 baudRate;
+      QString stringBaudRate;
+      QSerialPort::DataBits dataBits;
+      QString stringDataBits;
+      QSerialPort::Parity parity;
+      QString stringParity;
+      QSerialPort::StopBits stopBits;
+      QString stringStopBits;
+      QSerialPort::FlowControl flowControl;
+      QString stringFlowControl;
+  };
+
     explicit SerialPort(QObject *parent = nullptr);
     ~SerialPort();
 
@@ -28,10 +41,10 @@ public:
     //Méthode constante permettant l'accés aux attributs
 
     bool checkOpenSerial() const;
-    MainWindow::Settings settingsInfo() const;
+    SerialPort::Settings settingsInfo() const;
     QString serialError() const;
 
-    void settingUpdate(MainWindow::Settings settingsActu);
+    void settingUpdate(SerialPort::Settings settingsActu);
 
     void startCloseSerial();
 
@@ -61,7 +74,7 @@ private:
 
     // Attributs
 
-    MainWindow::Settings *m_settingsPort = nullptr;
+    SerialPort::Settings *m_settingsPort = nullptr;
     QSerialPort *m_serial = nullptr;
     QTimer *m_waitTimerReponse = nullptr;
 

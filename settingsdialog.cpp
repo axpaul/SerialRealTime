@@ -30,7 +30,7 @@ SettingsDialog::~SettingsDialog()
     delete m_ui;
 }
 
-MainWindow::Settings SettingsDialog::settings() const
+SerialPort::Settings SettingsDialog::settings() const
 {
     return m_currentSettings;
 }
