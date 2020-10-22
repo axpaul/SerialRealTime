@@ -107,22 +107,29 @@ SerialPort::Settings SerialPort::settingsInfo() const
 
 void SerialPort::readingData() {
 
-    if(m_serial->waitForReadyRead(m_waitTimeout)) {
-          if(m_serial->bytesAvailable() >= 5) {
+    if(m_serial->waitForReadyRead(m_waitTimeout))
+    {
+          if(m_serial->bytesAvailable() >= 5)
+          {
               QByteArray responseData = m_serial->read(5);
               qDebug() << "[SERIAL] Data received : " << Qt::hex << responseData.toHex();
-              if (!responseData.isEmpty() && responseData.size() == 5) {
+
+              if (!responseData.isEmpty() && responseData.size() == 5)
+              {
                   m_serial->clear(QSerialPort::AllDirections);
                   emit dataEmit(true, responseData);
               }
           }
-          else {
+          else
+          {
               m_serial->clear(QSerialPort::AllDirections);
               emit dataEmit(false, "");
               qDebug() << "[SERIAL] Reception error !";
           }
       }
-      else {
+
+      else
+      {
           m_serial->clear(QSerialPort::AllDirections);
           emit dataEmit(false, "");
           qDebug() << "[SERIAL] Timeout error !";
@@ -140,7 +147,6 @@ void SerialPort::run()
 
     m_serial = new QSerialPort();
 
-
     qRegisterMetaType<QSerialPort::SerialPortError>();
     qRegisterMetaType<SerialPort::Settings>();
 
@@ -157,14 +163,14 @@ void SerialPort::run()
         if (m_serialOpen == true)
         {
             //qDebug() << "Serial listen : " << m_stack.pop() << Qt::endl;
-            writeData(m_stack.pop());
-            mutex.unlock();
+            writeData(m_stack.pop());        
         }
         else
         {
             closeSerial();
         }
 
+        mutex.unlock();
     }
 }
 
