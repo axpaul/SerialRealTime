@@ -27,7 +27,17 @@
      </layout>
     </item>
     <item>
-     <widget class="QTextBrowser" name="console"/>
+     <widget class="QTextBrowser" name="console">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="tabChangesFocus">
+       <bool>true</bool>
+      </property>
+      <property name="readOnly">
+       <bool>false</bool>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -54,6 +64,7 @@
      <string>Tools</string>
     </property>
     <addaction name="actionConfigure"/>
+    <addaction name="actionClearConsole"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -133,6 +144,15 @@
    </property>
    <property name="text">
     <string>About Qt</string>
+   </property>
+  </action>
+  <action name="actionClearConsole">
+   <property name="icon">
+    <iconset resource="icone.qrc">
+     <normaloff>:/iconeWindows/icone/broom.png</normaloff>:/iconeWindows/icone/broom.png</iconset>
+   </property>
+   <property name="text">
+    <string>Clear</string>
    </property>
   </action>
  </widget>

@@ -8,8 +8,9 @@
 #include <QtDebug>
 #include <QWidget>
 #include "serialport.h"
+#include "settingsdialog.h"
 
-#define VERSION_LASER_PORFILER 2.0f
+#define VERSION_SERIAL 1.0f
 
 QT_BEGIN_NAMESPACE
 
@@ -18,7 +19,6 @@ namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
 class SerialPort;
-
 
 class MainWindow : public QMainWindow
 {
@@ -40,11 +40,17 @@ private slots :
 
 signals:
     void setSerialSettingsSig(SerialPort::Settings);
-    void initActionsConnections();
-
 
 private:
-        Ui::MainWindow *ui;
+    void initActionsConnections();
+
+     void showStatusMessage(const QString &stringConnection, const QString &versionSW);
+
+     Ui::MainWindow *ui;
+     QLabel *m_status = nullptr;
+     QString *m_connection;
+     QString *m_versionSW;
+     SettingsDialog *m_settings = nullptr;
 
 };
 #endif // MAINWINDOW_H
