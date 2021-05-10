@@ -3,11 +3,13 @@
 
 #include <QMainWindow>
 #include <QSerialPort>
+#include <QMessageBox>
 #include <QLabel>
-#include <QDebug>
+#include <QtDebug>
 #include <QWidget>
 #include "serialport.h"
 
+#define VERSION_LASER_PORFILER 2.0f
 
 QT_BEGIN_NAMESPACE
 
@@ -17,7 +19,6 @@ QT_END_NAMESPACE
 
 class SerialPort;
 
-class SettingsDialog;
 
 class MainWindow : public QMainWindow
 {
@@ -29,12 +30,21 @@ public:
 
 
 public slots :
+    void openSerialPort(SerialPort::Settings p);
+    void closeSerialPort();
+    void handleErrorShow(QString error);
+    void settingShow();
+
+private slots :
+    void about();
+
+signals:
+    void setSerialSettingsSig(SerialPort::Settings);
+    void initActionsConnections();
 
 
 private:
-
-
-
+        Ui::MainWindow *ui;
 
 };
 #endif // MAINWINDOW_H
