@@ -18,13 +18,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
-    mythread.cpp \
     serialport.cpp \
     settingsdialog.cpp
 
 HEADERS += \
     mainwindow.h \
-    mythread.h \
     serialport.h \
     settingsdialog.h
 
