@@ -20,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow(){
 
-    closeSerialPort();
+   // closeSerialPort();
 
     delete m_connection;
     delete m_versionSW;
@@ -46,7 +46,7 @@ void MainWindow::settingShow(){
     m_settings->show();
 }
 
-void MainWindow::openSerialPort(SerialPort::Settings p){
+void MainWindow::openSerialPortInfo(SerialPort::Settings p){
     showStatusMessage(QString("Connected to %1 : %2, %3, %4, %5, %6")
                       .arg(p.name).arg(p.stringBaudRate).arg(p.stringDataBits)
                       .arg(p.stringParity).arg(p.stringStopBits).arg(p.stringFlowControl), "");
@@ -55,7 +55,7 @@ void MainWindow::openSerialPort(SerialPort::Settings p){
     ui->actionDisconnect->setEnabled(true);
 }
 
-void MainWindow::closeSerialPort(){
+void MainWindow::closeSerialPortInfo(){
     ui->actionConnect->setEnabled(true);
     ui->actionDisconnect->setEnabled(false);
 
