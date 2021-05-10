@@ -9,5 +9,6 @@
         <file>icone/question.png</file>
         <file>icone/remove.png</file>
         <file>icone/usb.png</file>
+        <file>icone/broom.png</file>
     </qresource>
 </RCC>

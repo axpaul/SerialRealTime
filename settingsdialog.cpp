@@ -49,11 +49,16 @@ void SettingsDialog::showPortInfo(int idx)
     m_ui->pidLabel->setText(QString("Product Identifier: %1").arg(list.count() > 6 ? list.at(6) : blankString));
 }
 
+void SettingsDialog::showSetting() {
+    fillPortsInfo();
+    this->show();
+}
+
 void SettingsDialog::apply()
 {
     updateSettings();
     emit applyParameter();
-    hide();   
+    hide();
 }
 
 void SettingsDialog::checkCustomBaudRatePolicy(int idx)

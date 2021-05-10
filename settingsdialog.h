@@ -3,7 +3,6 @@
 
 #include <QDialog>
 #include <QSerialPort>
-#include "mainwindow.h"
 #include "serialport.h"
 
 QT_BEGIN_NAMESPACE
@@ -35,6 +34,9 @@ private slots:
     void apply();
     void checkCustomBaudRatePolicy(int idx);
     void checkCustomDevicePathPolicy(int idx);
+
+public slots:
+    void showSetting();
 
 private:
     void fillPortsParameters();
