@@ -15,6 +15,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->statusbar->addWidget(m_status);
 
+    initActionsConnections();
+
     qDebug() << "[MAINWINDOW] " << QThread::currentThread();
 }
 
@@ -44,6 +46,10 @@ void MainWindow::about(){
 
 void MainWindow::settingShow(){
     m_settings->show();
+}
+
+void MainWindow::setSerialSettings() {
+    emit setSerialSettingsSig(m_settings->settings());
 }
 
 void MainWindow::openSerialPortInfo(SerialPort::Settings p){
