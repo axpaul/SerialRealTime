@@ -24,7 +24,8 @@ bool SerialPort::openSerial()
 
     m_serial->setReadBufferSize(0);
 
-    if (m_serial->open(QIODevice::ReadWrite)) {
+    if (m_serial->open(QIODevice::ReadWrite))
+    {
         m_serial->clear(QSerialPort::AllDirections);
         emit SerialPort::serialOpenned(this->settingsInfo());
         return true;
@@ -46,7 +47,8 @@ void SerialPort::closeSerial()
 void SerialPort::handleError(QSerialPort::SerialPortError error)
 {
     qDebug() << "[" << QDateTime::currentDateTime().toString("dd-MM-yyyy_HH.mm.ss") << "][SERIAL] handleError";
-    if (error != QSerialPort::NoError) {
+    if (error != QSerialPort::NoError)
+    {
         m_serialRun = false;
         qDebug() << "[" << QDateTime::currentDateTime().toString("dd-MM-yyyy_HH.mm.ss") << "][SERIAL] emit errorEmit";
         emit SerialPort::errorEmit(m_serial->errorString());

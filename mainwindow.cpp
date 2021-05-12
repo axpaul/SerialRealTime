@@ -12,11 +12,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     m_semSendCmd = new QSemaphore(1);
 
-
-
      m_serialLoac->start();
 
-     connect(this, SIGNAL(setSerialSettingsSig(SerialPort::Settings)), m_serialLoac, SLOT(settingUpdate(SerialPort::Settings)));
+     initActionsConnectionsPrio();
 
      m_settings = new SettingsDialog;
      setSerialSettings();
@@ -41,20 +39,27 @@ MainWindow::~MainWindow(){
     delete ui;
 }
 
+/* Connect function sender/signal */
+
+void MainWindow::initActionsConnectionsPrio(){
+
+    connect(this, SIGNAL(setSerialSettingsSig(SerialPort::Settings)), m_serialLoac, SLOT(settingUpdate(SerialPort::Settings)));
+    connect(m_serialLoac, SIGNAL(errorEmit(QString)), this, SLOT(handleErrorShow(QString)));
+
+}
+
 void MainWindow::initActionsConnections(){
     connect(ui->actionQuit, &QAction::triggered, this, &MainWindow::close);
     connect(ui->actionAbout, &QAction::triggered, this, &MainWindow::about);
-
     connect(ui->actionConfigure, &QAction::triggered, m_settings, &SettingsDialog::showSetting); // set setting serial
     connect(m_settings, SIGNAL(applyParameter()), this, SLOT(setSerialSettings()));
-
-    connect(m_serialLoac, SIGNAL(serialOpenned(SerialPort::Settings)), this, SLOT(opennedSerial(SerialPort::Settings)));
-    connect(m_serialLoac, SIGNAL(serialClosed()), this, SLOT(closedSerial()));
 
     connect(ui->actionConnect, &QAction::triggered, this, &MainWindow::openSerialPort);
     connect(ui->actionDisconnect, &QAction::triggered, this, &MainWindow::closeSerialPort);
 
-    connect(m_serialLoac, SIGNAL(errorEmit(QString)), this, SLOT(handleErrorShow(QString)));
+    connect(m_serialLoac, SIGNAL(serialOpenned(SerialPort::Settings)), this, SLOT(opennedSerial(SerialPort::Settings)));
+    connect(m_serialLoac, SIGNAL(serialClosed()), this, SLOT(closedSerial()));
+
 
     connect(this, SIGNAL(sendCommandSerial(QByteArray)), m_serialLoac, SLOT(pushStack(QByteArray)));
     connect(m_serialLoac, SIGNAL(dataEmit(bool, QByteArray)), this, SLOT(responseDecode(bool, QByteArray)));
@@ -62,7 +67,7 @@ void MainWindow::initActionsConnections(){
     //connect(ui->a, &QAction::triggered, ui->console, &QPlainTextEdit::clear);
 }
 
-
+/* MainWindow Information */
 
 void MainWindow::about(){
     QString textAbout;
@@ -88,7 +93,7 @@ void MainWindow::showStatusMessage(const QString &stringConnection, const QStrin
    // m_status->setText(message);
 }
 
-
+/* Functions settings systems */
 
 void MainWindow::settingShow(){
     m_settings->show();
@@ -97,6 +102,12 @@ void MainWindow::settingShow(){
 void MainWindow::setSerialSettings() {
     emit setSerialSettingsSig(m_settings->settings());
 }
+
+SerialPort::Settings MainWindow::getSerialInfo() {
+    return m_serialLoac->settingsInfo();
+}
+
+/* Function open/close serial */
 
 void MainWindow::opennedSerial(SerialPort::Settings p) {
     qDebug() << "[MAINWINDOW] Serial openned";
@@ -120,13 +131,8 @@ void MainWindow::closedSerial() {
     ui->actionDisconnect->setEnabled(false);
 
     showStatusMessage(QString("Disconnected"), " ");
-
 }
 
-
-void MainWindow::handleErrorShow(QString error){
-   QMessageBox::critical(this, QString("Error"), error);
-}
 
 void MainWindow::openSerialPort() {
     qDebug() << "[MAINWINDOW] Send Serial open";
@@ -138,14 +144,18 @@ void MainWindow::closeSerialPort() {
     m_serialLoac->setSerialRun(false);
 }
 
+/* Error function */
 
-SerialPort::Settings MainWindow::getSerialInfo() {
-    return m_serialLoac->settingsInfo();
+void MainWindow::handleErrorShow(QString error){
+   QMessageBox::critical(this, QString("Error"), error);
 }
+
 
 QString MainWindow::getSerialError() {
     return m_serialLoac->serialError();
 }
+
+/* Write/read function */
 
 void MainWindow::responseDecode(bool responseCheck, QByteArray data)
 {

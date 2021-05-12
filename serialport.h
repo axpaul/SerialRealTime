@@ -1,6 +1,8 @@
 #ifndef SERIALPORT_H
 #define SERIALPORT_H
 
+#define SERIAL 5
+
 #include <QObject>
 #include <QSerialPort>
 #include <QTimer>
