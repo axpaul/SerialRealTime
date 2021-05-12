@@ -43,8 +43,10 @@ public slots :
     void cmdToSend(uint8_t cmdNumber, uint16_t data);
     void cmdToSend(uint8_t type, uint8_t add, uint8_t rw, uint16_t data);
     void responseDecode(bool responseCheck, QByteArray data);
+
     void opennedSerial(SerialPort::Settings p);
     void closedSerial();
+
     void openSerialPort();
     void closeSerialPort();
 
@@ -59,6 +61,7 @@ signals:
 
 private:
     void initActionsConnections();
+    void initActionsConnectionsPrio();
 
      void showStatusMessage(const QString &stringConnection, const QString &versionSW);
 

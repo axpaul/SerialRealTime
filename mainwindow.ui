@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Serial Test</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="icone.qrc">
+    <normaloff>:/iconeWindows/icone/usb.ico</normaloff>:/iconeWindows/icone/usb.ico</iconset>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
