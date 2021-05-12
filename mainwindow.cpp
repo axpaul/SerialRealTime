@@ -15,7 +15,14 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->statusbar->addWidget(m_status);
 
+    //m_serialLoac = new SerialPort;
+    m_serialRun = false;
+
+    //m_semSendCmd = new QSemaphore(1);
+
     initActionsConnections();
+
+    // m_serialLoac->start();
 
     qDebug() << "[MAINWINDOW] " << QThread::currentThread();
 }
@@ -35,41 +42,23 @@ void MainWindow::initActionsConnections(){
 
     connect(ui->actionConfigure, &QAction::triggered, m_settings, &SettingsDialog::showSetting); // set setting serial
     connect(m_settings, SIGNAL(applyParameter()), this, SLOT(setSerialSettings()));
+
+    connect(m_serialLoac, SIGNAL(serialOpenned(SerialPort::Settings)), this, SLOT(opennedSerial(SerialPort::Settings)));
+    connect(m_serialLoac, SIGNAL(serialClosed()), this, SLOT(closedSerial()));
+    connect(m_serialLoac, SIGNAL(errorEmit(QString)), this, SLOT(handleErrorShow(QString)));
+    connect(this, SIGNAL(setSerialSettingsSig(SerialPort::Settings)), m_serialLoac, SLOT(settingUpdate(SerialPort::Settings)));
+    connect(this, SIGNAL(sendCommandSerial(QByteArray)), m_serialLoac, SLOT(pushStack(QByteArray)));
+    connect(m_serialLoac, SIGNAL(dataEmit(bool, QByteArray)), this, SLOT(responseDecode(bool, QByteArray)));
+
     //connect(ui->a, &QAction::triggered, ui->console, &QPlainTextEdit::clear);
 }
 
+
+
 void MainWindow::about(){
     QString textAbout;
-    textAbout.sprintf("Serial Interface v2/v3 Interface\nVersion : %.1f", VERSION_SERIAL);
+    textAbout.asprintf("Serial Interface v2/v3 Interface\nVersion : %.1f", VERSION_SERIAL);
     QMessageBox::about(this,"About", textAbout);
-}
-
-void MainWindow::settingShow(){
-    m_settings->show();
-}
-
-void MainWindow::setSerialSettings() {
-    emit setSerialSettingsSig(m_settings->settings());
-}
-
-void MainWindow::openSerialPortInfo(SerialPort::Settings p){
-    showStatusMessage(QString("Connected to %1 : %2, %3, %4, %5, %6")
-                      .arg(p.name).arg(p.stringBaudRate).arg(p.stringDataBits)
-                      .arg(p.stringParity).arg(p.stringStopBits).arg(p.stringFlowControl), "");
-
-    ui->actionConnect->setEnabled(false);
-    ui->actionDisconnect->setEnabled(true);
-}
-
-void MainWindow::closeSerialPortInfo(){
-    ui->actionConnect->setEnabled(true);
-    ui->actionDisconnect->setEnabled(false);
-
-    showStatusMessage(QString("Disconnected"), " ");
-}
-
-void MainWindow::handleErrorShow(QString error){
-   QMessageBox::critical(this, QString("Error"), error);
 }
 
 void MainWindow::showStatusMessage(const QString &stringConnection, const QString &versionSW){
@@ -88,4 +77,159 @@ void MainWindow::showStatusMessage(const QString &stringConnection, const QStrin
     message = QString("%1 | %2").arg(*m_connection).arg(*m_versionSW);
 
     m_status->setText(message);
+}
+
+
+
+void MainWindow::settingShow(){
+    m_settings->show();
+}
+
+void MainWindow::setSerialSettings() {
+    emit setSerialSettingsSig(m_settings->settings());
+}
+
+
+
+void MainWindow::opennedSerial(SerialPort::Settings p) {
+    qDebug() << "[LOAC] Serial openned";
+    m_serialRun = true;
+
+    showStatusMessage(QString("Connected to %1 : %2, %3, %4, %5, %6")
+                      .arg(p.name).arg(p.stringBaudRate).arg(p.stringDataBits)
+                      .arg(p.stringParity).arg(p.stringStopBits).arg(p.stringFlowControl), "");
+
+    ui->actionConnect->setEnabled(false);
+    ui->actionDisconnect->setEnabled(true);
+}
+
+void MainWindow::closedSerial() {
+    qDebug() << "[LOAC] Serial closed";
+    m_serialRun = false;
+
+    m_serialLoac->clearStack();
+
+    ui->actionConnect->setEnabled(true);
+    ui->actionDisconnect->setEnabled(false);
+
+    showStatusMessage(QString("Disconnected"), " ");
+
+}
+
+
+void MainWindow::handleErrorShow(QString error){
+   QMessageBox::critical(this, QString("Error"), error);
+}
+
+void MainWindow::openSerialPort() {
+    qDebug() << "[LOAC] Serial open";
+    m_serialLoac->setSerialRun(true);
+}
+
+void MainWindow::closeSerialPort() {
+    qDebug() << "[LOAC] Serial close";
+    m_serialLoac->setSerialRun(false);
+}
+
+
+SerialPort::Settings MainWindow::getSerialInfo() {
+    return m_serialLoac->settingsInfo();
+}
+
+QString MainWindow::getSerialError() {
+    return m_serialLoac->serialError();
+}
+
+void MainWindow::responseDecode(bool responseCheck, QByteArray data)
+{
+    /*QString stringData;
+    QByteArray cmd;
+    QByteArray valueCmd;
+    bool check;
+    double value;
+    uint8_t cmdNumber;
+
+    emit consoleDebugSignal(responseCheck, data);
+
+    if (responseCheck == false)
+    {
+        qDebug() << "[LOAC] Error response check" << endl;
+    }
+    else
+    {
+        stringData = QString(data.toHex());
+
+        valueCmd = data.right(3);
+        valueCmd = valueCmd.left(2);
+        value = double((QString(valueCmd.toHex())).toUInt(&check, 16));
+
+        cmd = data.left(2);
+        cmd = cmd.right(1);
+
+        cmdNumber = (QString(cmd.toHex())).toUInt(&check, 16);
+
+        uint8_t type = (cmdNumber & 0b11100000) >> 5;
+        uint8_t add = (cmdNumber & 0b00011100) >> 2;
+        uint8_t rw = (cmdNumber & 0b00000010) >> 1;
+        uint8_t ack = (cmdNumber & 0b00000001);
+
+        uint8_t CommandReceived = ( (type << 5) | (add << 1) | rw);*/
+
+       /* qDebug() << "Data :" << value << "Cmd :" << hex << cmdNumber << "\n";
+        qDebug() << "type :" << bin << type << "\t add :"  << bin << add << "\t rw :" << bin << rw << "\t ack :" << bin << ack << "\n";
+        qDebug() << "Cmd Good :" << hex << CommandCorrected << "\n";
+        qDebug() << "String :" << stringData << "\n";*/
+
+        /*if(ack != 1)
+        {
+            commandeStore(CommandReceived, value);
+            emit modifCommandePanel(CommandReceived, value);
+
+            if (m_scenario == true)
+            {
+                emit scenarioDataReceived(CommandReceived, value);
+                m_dataValueSceReceived = value;
+                qDebug() << "[SCENARIO] Data value : " << m_dataValueSceReceived << "\n";
+            }
+
+        }
+    }*/
+}
+
+void MainWindow::cmdToSend(uint8_t type, uint8_t add, uint8_t rw, uint16_t data) {
+    QByteArray cmd;
+    if(rw == 0) {
+        cmd.resize(5);
+        cmd[0] = 0x5b;
+        cmd[1] = (type << 5) | (add << 1) | rw;
+        cmd[2] = data >> 8;
+        cmd[3] = data & 0xFF;
+        cmd[4] = 0x5d;
+    }
+    else {
+        cmd.resize(3);
+        cmd[0] = 0x5b;
+        cmd[1] = (type << 5) | (add << 1) | rw;
+        cmd[2] = 0x5d;
+    }
+    emit MainWindow::sendCommandSerial(cmd);
+}
+
+void MainWindow::cmdToSend(uint8_t cmdNumber, uint16_t data) {
+    QByteArray cmd;
+    if((cmdNumber & 0x1) == 0) {
+        cmd.resize(5);
+        cmd[0] = 0x5b;
+        cmd[1] = cmdNumber;
+        cmd[2] = data >> 8;
+        cmd[3] = data & 0xFF;
+        cmd[4] = 0x5d;
+    }
+    else {
+        cmd.resize(3);
+        cmd[0] = 0x5b;
+        cmd[1] = cmdNumber;
+        cmd[2] = 0x5d;
+    }
+    emit MainWindow::sendCommandSerial(cmd);
 }

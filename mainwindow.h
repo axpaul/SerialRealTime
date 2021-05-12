@@ -33,8 +33,8 @@ public:
 
 
 public slots :
-    void openSerialPortInfo(SerialPort::Settings p);
-    void closeSerialPortInfo();
+    /*void openSerialPortInfo(SerialPort::Settings p);
+    void closeSerialPortInfo();*/
 
     void handleErrorShow(QString error);
     void settingShow();
