@@ -47,7 +47,6 @@ public slots :
     void closedSerial();
     void openSerialPort();
     void closeSerialPort();
-    void setSerialSettings(SerialPort::Settings s);
 
 private slots :
     void about();

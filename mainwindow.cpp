@@ -15,14 +15,14 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->statusbar->addWidget(m_status);
 
-    //m_serialLoac = new SerialPort;
+    m_serialLoac = new SerialPort;
     m_serialRun = false;
 
-    //m_semSendCmd = new QSemaphore(1);
+    m_semSendCmd = new QSemaphore(1);
 
     initActionsConnections();
 
-    // m_serialLoac->start();
+     m_serialLoac->start();
 
     qDebug() << "[MAINWINDOW] " << QThread::currentThread();
 }
