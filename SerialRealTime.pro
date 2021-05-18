@@ -16,12 +16,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    console.cpp \
     main.cpp \
     mainwindow.cpp \
     serialport.cpp \
     settingsdialog.cpp
 
 HEADERS += \
+    console.h \
     mainwindow.h \
     serialport.h \
     settingsdialog.h
@@ -34,8 +36,6 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
-
-RC_ICONS = usb.ico
 
 RESOURCES += \
     icone.qrc

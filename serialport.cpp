@@ -74,38 +74,14 @@ void SerialPort::settingUpdate(SerialPort::Settings settingPort)
     *m_settingsPort = settingPort;
 }
 
-void SerialPort::readingData() {
-    if(m_serial->waitForReadyRead(m_waitTimeout)) {
-        if(m_serial->bytesAvailable() >= 5) {
-            m_retry = 0;
-            QByteArray responseData = m_serial->read(5);
-            qDebug() << "[" << QDateTime::currentDateTime().toString("dd-MM-yyyy_HH.mm.ss") << "][SERIAL] Data received : " << Qt::hex << responseData.toHex();
-            if (!responseData.isEmpty() && responseData.size() == 5) {
-                m_serial->clear(QSerialPort::AllDirections);
-                emit dataEmit(true, responseData);
-            }
-        }
-        else {
-            m_retry = 0;
-            m_serial->clear(QSerialPort::AllDirections);
-            emit dataEmit(false, "");
-            qDebug() << "[" << QDateTime::currentDateTime().toString("dd-MM-yyyy_HH.mm.ss") << "][SERIAL] Reception error !";
-        }
-    }
-    else {
-        m_retry = 0;
-        m_serial->clear(QSerialPort::AllDirections);
-        emit dataEmit(false, "");
-        qDebug() << "[" << QDateTime::currentDateTime().toString("dd-MM-yyyy_HH.mm.ss") << "][SERIAL] Timeout error !";
-    }
-}
+
 
 void SerialPort::writeData(const QByteArray data)
 {
-    qDebug() << "[" << QDateTime::currentDateTime().toString("dd-MM-yyyy_HH.mm.ss") << "][SERIAL] cmd sent : " << Qt::hex << data.toHex();
+    qDebug() << "[" << QDateTime::currentDateTime().toString("dd-MM-yyyy_HH.mm.ss") << "][SERIAL] cmd sent : " << hex << data.toHex();
     m_serial->clear(QSerialPort::AllDirections);
     m_serial->write(data);
-    readingData();
+    m_serial->waitForBytesWritten();
 }
 
 void SerialPort::pushStack(QByteArray cmd) {

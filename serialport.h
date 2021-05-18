@@ -52,7 +52,6 @@ public:
 
 public slots:
     void settingUpdate(SerialPort::Settings settingPort);
-    void readingData();
     void pushStack(QByteArray cmd);
 
 signals:

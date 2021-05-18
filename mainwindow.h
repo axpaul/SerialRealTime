@@ -7,6 +7,8 @@
 #include <QLabel>
 #include <QtDebug>
 #include <QWidget>
+
+#include "console.h"
 #include "serialport.h"
 #include "settingsdialog.h"
 
@@ -19,6 +21,7 @@ namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
 class SerialPort;
+class Console;
 
 class MainWindow : public QMainWindow
 {
@@ -33,21 +36,18 @@ public:
 
 
 public slots :
-    void openSerialPortInfo(SerialPort::Settings p);
-    void closeSerialPortInfo();
 
     void handleErrorShow(QString error);
     void settingShow();
     void setSerialSettings();
 
-    void cmdToSend(uint8_t cmdNumber, uint16_t data);
-    void cmdToSend(uint8_t type, uint8_t add, uint8_t rw, uint16_t data);
-    void responseDecode(bool responseCheck, QByteArray data);
+    void cmdToSend();
+
     void opennedSerial(SerialPort::Settings p);
     void closedSerial();
+
     void openSerialPort();
     void closeSerialPort();
-    void setSerialSettings(SerialPort::Settings s);
 
 private slots :
     void about();
@@ -60,6 +60,7 @@ signals:
 
 private:
     void initActionsConnections();
+    void initActionsConnectionsPrio();
 
      void showStatusMessage(const QString &stringConnection, const QString &versionSW);
 
@@ -73,13 +74,13 @@ private:
 
      SettingsDialog *m_settings = nullptr;
 
-     SerialPort *m_serialLoac;
+     SerialPort *m_serial;
      QSemaphore *m_semSendCmd;
-
      bool m_serialRun;
-     QThread *m_serialThread;
 
      int *m_numberCommandeSend;
+
+     Console *console;
 
 };
 #endif // MAINWINDOW_H

@@ -10,5 +10,6 @@
         <file>icone/remove.png</file>
         <file>icone/usb.png</file>
         <file>icone/broom.png</file>
+        <file>icone/usb.ico</file>
     </qresource>
 </RCC>
