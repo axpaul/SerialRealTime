@@ -33,20 +33,6 @@
         <item row="0" column="1">
          <widget class="QLineEdit" name="lineEdit_cmd"/>
         </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_byte">
-          <property name="text">
-           <string>Byte reception</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QSpinBox" name="spinBox_byte">
-          <property name="maximum">
-           <number>1000</number>
-          </property>
-         </widget>
-        </item>
        </layout>
       </item>
       <item>

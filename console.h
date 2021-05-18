@@ -19,7 +19,7 @@ public:
 
 protected:
     void keyPressEvent(QKeyEvent *e) Q_DECL_OVERRIDE;
-   // void mousePressEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
+    //void mousePressEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
     void mouseDoubleClickEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
     //void contextMenuEvent(QContextMenuEvent *e) Q_DECL_OVERRIDE;
 

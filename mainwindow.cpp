@@ -28,6 +28,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     initActionsConnections();
 
+    ui->actionConnect->setEnabled(true);
+    ui->actionDisconnect->setEnabled(false);
 
     qDebug() << "[" << QDateTime::currentDateTime().toString("dd-MM-yyyy_HH.mm.ss") << "][MAINWINDOW] " << QThread::currentThread();
 }
@@ -62,13 +64,11 @@ void MainWindow::initActionsConnections(){
     connect(m_serial, SIGNAL(serialOpenned(SerialPort::Settings)), this, SLOT(opennedSerial(SerialPort::Settings)));
     connect(m_serial, SIGNAL(serialClosed()), this, SLOT(closedSerial()));
 
+    connect(ui->button_Send, &QPushButton::clicked, this, &MainWindow::cmdToSend);
 
-    connect(this, SIGNAL(sendCommandSerial(QByteArray, int)), m_serial, SLOT(pushStack(QByteArray, int)));
-    connect(m_serial, SIGNAL(dataEmit(bool, QByteArray)), this, SLOT(responseDecode(bool, QByteArray)));
-
+    connect(this, SIGNAL(sendCommandSerial(QByteArray)), m_serial, SLOT(pushStack(QByteArray)));
     connect(ui->actionClearConsole, &QAction::triggered, ui->console_Window, &QPlainTextEdit::clear);
 
-    connect(ui->button_Send, &QPushButton::clicked, this, &MainWindow::cmdToSend);
 }
 
 /* MainWindow Information */
@@ -121,8 +121,6 @@ void MainWindow::opennedSerial(SerialPort::Settings p) {
                       .arg(p.name).arg(p.stringBaudRate).arg(p.stringDataBits)
                       .arg(p.stringParity).arg(p.stringStopBits).arg(p.stringFlowControl), "");
 
-    //ui->actionConnect->setEnabled(false);
-    //ui->actionDisconnect->setEnabled(true);
 }
 
 void MainWindow::closedSerial() {
@@ -131,8 +129,8 @@ void MainWindow::closedSerial() {
 
     m_serial->clearStack();
 
-   // ui->actionConnect->setEnabled(true);
-   // ui->actionDisconnect->setEnabled(false);
+    ui->actionConnect->setEnabled(false);
+    ui->actionDisconnect->setEnabled(false);
 
     showStatusMessage(QString("Disconnected"), " ");
 }
@@ -141,11 +139,17 @@ void MainWindow::closedSerial() {
 void MainWindow::openSerialPort() {
     qDebug() << "[" << QDateTime::currentDateTime().toString("dd-MM-yyyy_HH.mm.ss")<< "][MAINWINDOW] Send Serial open";
     m_serial->setSerialRun(true);
+
+    ui->actionConnect->setEnabled(false);
+    ui->actionDisconnect->setEnabled(true);
 }
 
 void MainWindow::closeSerialPort() {
     qDebug() << "[" << QDateTime::currentDateTime().toString("dd-MM-yyyy_HH.mm.ss")<< "][MAINWINDOW] Send Serial close";
     m_serial->setSerialRun(false);
+
+    ui->actionConnect->setEnabled(true);
+    ui->actionDisconnect->setEnabled(false);
 }
 
 /* Error function */
@@ -159,70 +163,25 @@ QString MainWindow::getSerialError() {
     return m_serial->serialError();
 }
 
-/* Write/read function */
+/* Write function */
 
-void MainWindow::responseDecode(bool responseCheck, QByteArray data)
-{
-    QByteArray dataToShow("Reception -> ");
-
-    if (responseCheck == false)
-    {
-        qDebug() << "[" << QDateTime::currentDateTime().toString("dd-MM-yyyy_HH.mm.ss")<< "][MAINWINDOW] Error response check" << Qt::endl;
-    }  
-    console->putData(dataToShow.append(data));
-
-}
 
 void MainWindow::cmdToSend()
 {
-    QByteArray dataToSend(ui->lineEdit_cmd->text().toUtf8()),
-            dataToShow("Send -> ");
-    int byte(ui->spinBox_byte->value());
 
-    ui->lineEdit_cmd->clear();
-    console->putData(dataToShow.append(dataToSend));
-    console->putData("\n");
+   QByteArray dataToSend((ui->lineEdit_cmd->text()).toLocal8Bit());
 
+   dataToSend.append("\r");
 
-    emit sendCommandSerial(dataToSend,byte);
+   qDebug() << "[" << QDateTime::currentDateTime().toString("dd-MM-yyyy_HH.mm.ss")<< "][MAINWINDOW] Send data : " << Qt::hex << dataToSend.toHex();
 
+   QByteArray dataToShow("Send -> ");
+
+   ui->lineEdit_cmd->clear();
+   console->putData(dataToShow.append(dataToSend));
+   //console->putData("\n");
+
+   emit sendCommandSerial(dataToSend);
 }
 
-/*void MainWindow::cmdToSend(uint8_t type, uint8_t add, uint8_t rw, uint16_t data) {
-    QByteArray cmd;
-    if(rw == 0) {
-        cmd.resize(5);
-        cmd[0] = 0x5b;
-        cmd[1] = (type << 5) | (add << 1) | rw;
-        cmd[2] = data >> 8;
-        cmd[3] = data & 0xFF;
-        cmd[4] = 0x5d;
-    }
-    else {
-        cmd.resize(3);
-        cmd[0] = 0x5b;
-        cmd[1] = (type << 5) | (add << 1) | rw;
-        cmd[2] = 0x5d;
-    }
-//    emit MainWindow::sendCommandSerial(cmd);
-}
 
-void MainWindow::cmdToSend(uint8_t cmdNumber, uint16_t data) {
-    QByteArray cmd;
-    if((cmdNumber & 0x1) == 0) {
-        cmd.resize(5);
-        cmd[0] = 0x5b;
-        cmd[1] = cmdNumber;
-        cmd[2] = data >> 8;
-        cmd[3] = data & 0xFF;
-        cmd[4] = 0x5d;
-    }
-    else {
-        cmd.resize(3);
-        cmd[0] = 0x5b;
-        cmd[1] = cmdNumber;
-        cmd[2] = 0x5d;
-    }
-//    emit MainWindow::sendCommandSerial(cmd);
-}
-*/

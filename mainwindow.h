@@ -41,12 +41,7 @@ public slots :
     void settingShow();
     void setSerialSettings();
 
-    /*void cmdToSend(uint8_t cmdNumber, uint16_t data);
-    void cmdToSend(uint8_t type, uint8_t add, uint8_t rw, uint16_t data);*/
-
     void cmdToSend();
-
-    void responseDecode(bool responseCheck, QByteArray data);
 
     void opennedSerial(SerialPort::Settings p);
     void closedSerial();
@@ -61,7 +56,7 @@ signals:
     void setSerialSettingsSig(SerialPort::Settings);
     void serialOppened(SerialPort::Settings p);
     void serialClosed();
-    void sendCommandSerial(QByteArray data, int byte);
+    void sendCommandSerial(QByteArray data);
 
 private:
     void initActionsConnections();

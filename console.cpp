@@ -4,7 +4,7 @@
 
 #include <QtCore/QDebug>
 
-Console::Console(QWidget *parent) : QPlainTextEdit(parent), localEchoEnabled(false)
+Console::Console(QWidget *parent) : QPlainTextEdit(parent), localEchoEnabled(true)
 {
     document()->setMaximumBlockCount(100);
     QPalette p = palette();
@@ -35,7 +35,6 @@ void Console::keyPressEvent(QKeyEvent *e)
     case Qt::Key_Right:
     case Qt::Key_Up:
     case Qt::Key_Down:
-    case Qt::Key_Enter:
         break;
     default:
         if (localEchoEnabled)

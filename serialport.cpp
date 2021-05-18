@@ -24,8 +24,7 @@ bool SerialPort::openSerial()
 
     m_serial->setReadBufferSize(0);
 
-    if (m_serial->open(QIODevice::ReadWrite))
-    {
+    if (m_serial->open(QIODevice::ReadWrite)) {
         m_serial->clear(QSerialPort::AllDirections);
         emit SerialPort::serialOpenned(this->settingsInfo());
         return true;
@@ -47,8 +46,7 @@ void SerialPort::closeSerial()
 void SerialPort::handleError(QSerialPort::SerialPortError error)
 {
     qDebug() << "[" << QDateTime::currentDateTime().toString("dd-MM-yyyy_HH.mm.ss") << "][SERIAL] handleError";
-    if (error != QSerialPort::NoError)
-    {
+    if (error != QSerialPort::NoError) {
         m_serialRun = false;
         qDebug() << "[" << QDateTime::currentDateTime().toString("dd-MM-yyyy_HH.mm.ss") << "][SERIAL] emit errorEmit";
         emit SerialPort::errorEmit(m_serial->errorString());
@@ -77,57 +75,25 @@ void SerialPort::settingUpdate(SerialPort::Settings settingPort)
 }
 
 
-void SerialPort::readingData() {
-    if(m_serial->waitForReadyRead(m_waitTimeout)) {
-
-
-        if(m_serial->bytesAvailable() >= 127) {
-            m_retry = 0;
-            QByteArray responseData = m_serial->read(127);
-            qDebug() << "[" << QDateTime::currentDateTime().toString("dd-MM-yyyy_HH.mm.ss") << "][SERIAL] Data received : " << Qt::hex << responseData.toHex();
-            if (!responseData.isEmpty() && responseData.size() >= 127) {
-                m_serial->clear(QSerialPort::AllDirections);
-                emit dataEmit(true, responseData);
-            }
-        }
-        else {
-            m_retry = 0;
-            m_serial->clear(QSerialPort::AllDirections);
-            emit dataEmit(false, "");
-            qDebug() << "[" << QDateTime::currentDateTime().toString("dd-MM-yyyy_HH.mm.ss") << "][SERIAL] Reception error !";
-        }
-    }
-    else {
-        m_retry = 0;
-        m_serial->clear(QSerialPort::AllDirections);
-        emit dataEmit(false, "");
-        qDebug() << "[" << QDateTime::currentDateTime().toString("dd-MM-yyyy_HH.mm.ss") << "][SERIAL] Timeout error !";
-    }
-}
 
 void SerialPort::writeData(const QByteArray data)
 {
-    qDebug() << "[" << QDateTime::currentDateTime().toString("dd-MM-yyyy_HH.mm.ss") << "][SERIAL] cmd sent : " << Qt::hex << data.toHex();
-
+    qDebug() << "[" << QDateTime::currentDateTime().toString("dd-MM-yyyy_HH.mm.ss") << "][SERIAL] cmd sent : " << hex << data.toHex();
     m_serial->clear(QSerialPort::AllDirections);
     m_serial->write(data);
-    readingData();
+    m_serial->waitForBytesWritten();
 }
 
-void SerialPort::pushStack(QByteArray cmd, int byte)
-{
+void SerialPort::pushStack(QByteArray cmd) {
     mut.lock();
-    m_stackCmd.push(cmd);
-    m_stackByte.push(byte);
+    m_stack.push(cmd);
     m_semStack->release(1);
     mut.unlock();
 }
 
 void SerialPort::clearStack() {
-    if(!m_stackCmd.isEmpty())
-        m_stackCmd.clear();
-    if(!m_stackByte.isEmpty())
-        m_stackByte.clear();
+    if(!m_stack.isEmpty())
+        m_stack.clear();
     while(m_semStack->tryAcquire(1))
         ;
     m_retry = 0;
@@ -148,9 +114,6 @@ void SerialPort::run() {
     m_serialRun = false;
     m_retry = 0;
 
-    m_serial->isSequential();
-    m_serial->setReadBufferSize(128);
-
     // Register types for connect
     qRegisterMetaType<QSerialPort::SerialPortError>();
     qRegisterMetaType<SerialPort::Settings>();
@@ -158,12 +121,10 @@ void SerialPort::run() {
     connect(m_serial, &QSerialPort::errorOccurred, this, &SerialPort::handleError);
 
     qDebug() << "[" << QDateTime::currentDateTime().toString("dd-MM-yyyy_HH.mm.ss") << "][SERIAL] " << QThread::currentThread();
-
     while(1) {
         if(m_serialRun) {
             if(this->openSerial()) {
                 qDebug() << "[" << QDateTime::currentDateTime().toString("dd-MM-yyyy_HH.mm.ss") << "][SERIAL] Serial oppened";
-
             }
             else {
                 qDebug() << "[" << QDateTime::currentDateTime().toString("dd-MM-yyyy_HH.mm.ss") << "][SERIAL] Serial failed";
@@ -172,8 +133,7 @@ void SerialPort::run() {
             while(m_serialRun) {
                 if(m_semStack->tryAcquire(1)) {
                     mut.lock();
-                    QByteArray tmp = m_stackCmd.pop();
-                   // m_byte = m_stackByte.pop();
+                    QByteArray tmp = m_stack.pop();
                     mut.unlock();
                     writeData(tmp);
                 }

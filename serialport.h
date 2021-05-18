@@ -1,8 +1,6 @@
 #ifndef SERIALPORT_H
 #define SERIALPORT_H
 
-#define ERRORSERIALBYTE 5
-
 #include <QObject>
 #include <QSerialPort>
 #include <QTimer>
@@ -44,6 +42,7 @@ public:
     void closeSerial();
     void writeData(const QByteArray data);
 
+
     bool checkOpenSerial() const;
     Settings settingsInfo() const;
     QString serialError() const;
@@ -53,8 +52,7 @@ public:
 
 public slots:
     void settingUpdate(SerialPort::Settings settingPort);
-    void readingData();
-    void pushStack(QByteArray cmd, int byte);
+    void pushStack(QByteArray cmd);
 
 signals:
     void errorEmit(QString);
@@ -66,22 +64,16 @@ private:
     Settings *m_settingsPort = nullptr;
     QSerialPort *m_serial = nullptr;
     QTimer *m_waitTimerReponse = nullptr;
-    bool m_serialRun;
 
-    int m_waitTimeout = 100000;
+    int m_waitTimeout = 1500;
     int m_readDataTry = 0;
-
     QSemaphore *m_semSerialPort;
     QSemaphore *m_semStack;
-    QMutex mut;
+    QStack<QByteArray> m_stack;
+    bool m_serialRun;
     uint8_t m_retry;
 
-    QStack<QByteArray> m_stackCmd;
-    QStack<int> m_stackByte;
-
-    int m_byte;
-
-
+    QMutex mut;
 };
 
 #endif // SERIALPORT_H
