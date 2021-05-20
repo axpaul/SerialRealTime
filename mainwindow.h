@@ -62,7 +62,7 @@ private:
     void initActionsConnections();
     void initActionsConnectionsPrio();
 
-     void showStatusMessage(const QString &stringConnection, const QString &versionSW);
+     void showStatusMessage(const QString &stringConnection);
 
      Ui::MainWindow *ui;
 
@@ -75,7 +75,6 @@ private:
      SettingsDialog *m_settings = nullptr;
 
      SerialPort *m_serial;
-     QSemaphore *m_semSendCmd;
      bool m_serialRun;
 
      int *m_numberCommandeSend;

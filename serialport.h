@@ -56,7 +56,6 @@ public slots:
 
 signals:
     void errorEmit(QString);
-    void dataEmit(bool receptionChek, QByteArray data);
     void serialOpenned(SerialPort::Settings p);
     void serialClosed();
 
