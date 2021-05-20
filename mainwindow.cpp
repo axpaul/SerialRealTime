@@ -12,19 +12,17 @@ MainWindow::MainWindow(QWidget *parent)
     m_serial = new SerialPort;
     m_serialRun = false;
 
-    m_semSendCmd = new QSemaphore(1);
+    m_serial->start();
 
-     m_serial->start();
+    initActionsConnectionsPrio();
 
-     initActionsConnectionsPrio();
+    m_settings = new SettingsDialog;
+    setSerialSettings();
 
-     m_settings = new SettingsDialog;
-     setSerialSettings();
+    m_connection = new QString;
+    m_status = new QLabel;
 
-     m_connection = new QString;
-     m_versionSW = new QString;
-
-     ui->statusbar->addWidget(m_status);
+    ui->statusbar->addWidget(m_status);
 
     initActionsConnections();
 
@@ -36,10 +34,11 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow(){
 
-   // closeSerialPort();
+    closeSerialPort();
 
+    delete m_status;
+    delete m_settings;
     delete m_connection;
-    delete m_versionSW;
     delete ui;
 }
 
@@ -79,7 +78,8 @@ void MainWindow::about(){
     QMessageBox::about(this,"About", textAbout);
 }
 
-void MainWindow::showStatusMessage(const QString &stringConnection, const QString &versionSW){
+void MainWindow::showStatusMessage(const QString &stringConnection)
+{
     QString message;
 
     if (stringConnection != "" && stringConnection != *m_connection)
@@ -87,14 +87,9 @@ void MainWindow::showStatusMessage(const QString &stringConnection, const QStrin
         *m_connection = stringConnection;
     }
 
-    if (versionSW != "" && versionSW != *m_versionSW)
-    {
-        *m_versionSW = versionSW;
-    }
+    message = QString("%1").arg(*m_connection);
 
-    message = QString("%1 | %2").arg(*m_connection).arg(*m_versionSW);
-
-   // m_status->setText(message);
+    m_status->setText(message);
 }
 
 /* Functions settings systems */
@@ -116,30 +111,21 @@ SerialPort::Settings MainWindow::getSerialInfo() {
 void MainWindow::opennedSerial(SerialPort::Settings p) {
     qDebug() << "[" << QDateTime::currentDateTime().toString("dd-MM-yyyy_HH.mm.ss") << "][MAINWINDOW] Serial openned";
     m_serialRun = true;
-
     showStatusMessage(QString("Connected to %1 : %2, %3, %4, %5, %6")
                       .arg(p.name).arg(p.stringBaudRate).arg(p.stringDataBits)
-                      .arg(p.stringParity).arg(p.stringStopBits).arg(p.stringFlowControl), "");
-
+                      .arg(p.stringParity).arg(p.stringStopBits).arg(p.stringFlowControl));
 }
 
 void MainWindow::closedSerial() {
     qDebug() << "[" << QDateTime::currentDateTime().toString("dd-MM-yyyy_HH.mm.ss")<< "][MAINWINDOW] Serial closed";
     m_serialRun = false;
-
     m_serial->clearStack();
-
-    ui->actionConnect->setEnabled(false);
-    ui->actionDisconnect->setEnabled(false);
-
-    showStatusMessage(QString("Disconnected"), " ");
+    showStatusMessage(QString("Disconnected"));
 }
-
 
 void MainWindow::openSerialPort() {
     qDebug() << "[" << QDateTime::currentDateTime().toString("dd-MM-yyyy_HH.mm.ss")<< "][MAINWINDOW] Send Serial open";
     m_serial->setSerialRun(true);
-
     ui->actionConnect->setEnabled(false);
     ui->actionDisconnect->setEnabled(true);
 }
@@ -147,7 +133,6 @@ void MainWindow::openSerialPort() {
 void MainWindow::closeSerialPort() {
     qDebug() << "[" << QDateTime::currentDateTime().toString("dd-MM-yyyy_HH.mm.ss")<< "][MAINWINDOW] Send Serial close";
     m_serial->setSerialRun(false);
-
     ui->actionConnect->setEnabled(true);
     ui->actionDisconnect->setEnabled(false);
 }
@@ -158,29 +143,20 @@ void MainWindow::handleErrorShow(QString error){
    QMessageBox::critical(this, QString("Error"), error);
 }
 
-
 QString MainWindow::getSerialError() {
     return m_serial->serialError();
 }
 
 /* Write function */
 
-
 void MainWindow::cmdToSend()
 {
-
    QByteArray dataToSend((ui->lineEdit_cmd->text()).toLocal8Bit());
-
    dataToSend.append("\r");
-
    qDebug() << "[" << QDateTime::currentDateTime().toString("dd-MM-yyyy_HH.mm.ss")<< "][MAINWINDOW] Send data : " << Qt::hex << dataToSend.toHex();
-
    QByteArray dataToShow("Send -> ");
-
    ui->lineEdit_cmd->clear();
    console->putData(dataToShow.append(dataToSend));
-   //console->putData("\n");
-
    emit sendCommandSerial(dataToSend);
 }
 
