@@ -1,6 +1,6 @@
 <h1>SerialRealTime</h1>
 
-<h2>SerialRealTime : Class to create real-time witer serial on Qt using QThread technology</h2>
+<h2>SerialRealTime : Class to create real-time writer serial on Qt using QThread technology</h2>
 
 *Copyright (c) CNES and contributors. All rights reserved.*
 
