@@ -2,7 +2,7 @@
 
 <h2>SerialRealTime : Class to create real-time writer serial on Qt using QThread technology</h2>
 
-*Apache License 2.0 with Commons Clause*
+*Apache License 2.0 with Commons Clause,*
 *Copyright 2023 Miailhe Paul, all rights reserved.*
 
 <p>To be able to control a measuring bench using the GRBL system, I wrote a serial class that allows to send commands to manage the movement. 
